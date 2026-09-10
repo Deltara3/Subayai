@@ -13,8 +13,22 @@
 
         bool poll() {
             uint16_t cycles = readCapacitive();
-            bool pressed = cycles > config->keyThresholds[index];
-            return pressed;
+            bool rawPressed = cycles > config->keyThresholds[index];
+
+            if (rawPressed && !state) {
+                if (!lastRaw) {
+                    lastChange = micros();
+                }
+
+                if ((micros() - lastChange) >= config->debounceDelay) {
+                    state = true;
+                }
+            } else if (!rawPressed) {
+                state = false;
+            }
+
+            lastRaw = rawPressed;
+            return state;
         }
 
         void bind(Pin boundPin, const Config& cfg, uint8_t keyIndex) {
@@ -27,6 +41,10 @@
         Pin pin;
         uint8_t index = 0;
         const Config* config = nullptr;
+
+        bool lastRaw = false;
+        bool state = false;
+        uint32_t lastChange = 0;
 
         uint16_t readCapacitive() {
             // Attempt to discharge the plate.
