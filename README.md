@@ -29,7 +29,7 @@ To add a new key, simply add a new lane to the right. There's a hard limit at si
 ## Configuration
 Configuration is done through the CLI. It can be installed by running:
 ```bash
-pip install git+https://github.com/Deltara3/Subayai.git#subdirectory=src
+pip install git+https://github.com/Deltara3/Subayai.git#subdirectory=cli
 ```
 
 To provide a quick rundown of the commands:
