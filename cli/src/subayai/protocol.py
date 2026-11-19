@@ -17,10 +17,10 @@ def requires_connection(func):
 class Command(IntEnum):
     ACK = 0x01,
     NAK = 0x02,
-    KEY_COUNT = 0xBB,
-    CONFIG_REQUEST = 0xCC,
-    CONFIG_UPDATE = 0xDD,
-    CONFIG_RESET = 0xEE
+    KEY_COUNT = 0x10,
+    CONFIG_REQUEST = 0x20,
+    CONFIG_UPDATE = 0x21,
+    CONFIG_RESET = 0x22
 
 class Protocol:
     port: str

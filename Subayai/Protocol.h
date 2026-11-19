@@ -11,11 +11,11 @@
 enum Command: uint8_t {
     CMD_ACK = 0x01,
     CMD_NAK = 0x02,
-    CMD_KEY_STATE = 0xAA,
-    CMD_KEY_COUNT = 0xBB,
-    CMD_CONFIG_REQUEST = 0xCC,
-    CMD_CONFIG_UPDATE = 0xDD,
-    CMD_CONFIG_RESET = 0xEE
+    CMD_KEY_COUNT = 0x10,
+    CMD_CONFIG_REQUEST = 0x20,
+    CMD_CONFIG_UPDATE = 0x21,
+    CMD_CONFIG_RESET = 0x22,
+    CMD_KEY_STATE = 0x30
 };
 
 class Protocol {
