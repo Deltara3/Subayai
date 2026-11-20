@@ -42,7 +42,7 @@ def create_parser(min: int, max: int):
 def update(
     ctx: typer.Context,
     input: Path = typer.Option(None, "--input", "-i", help = "Writes a config from a file."),
-    key_code: list[str] = typer.Option(None, "--key-code", "-k", **create_parser(0, Config.MAX_KEY_CODE), help = "Key code value, repeatable."),
+    key_code: list[str] = typer.Option([], "--key-code", "-k", **create_parser(0, Config.MAX_KEY_CODE), help = "Key code value, repeatable."),
     threshold: list[str] = typer.Option([], "--threshold", "-t", **create_parser(0, Config.MAX_THRESHOLD), help = "Threshold value in cycles, repeatable."),
     discharge_delay: list[str] = typer.Option([], "--discharge-delay", "-c", **create_parser(0, Config.MAX_DISCHARGE_DELAY), help = "Discharge delay in microseconds, repeatable."),
     debounce_delay: int = typer.Option(None, "--debounce-delay", "-d", min = 0, max = Config.MAX_DEBOUNCE, help = "Debounce delay in microseconds.")
