@@ -24,9 +24,10 @@
         // Set sender to OUTPUT.
         *SENDER.ddr |= SENDER.bit;
 
-        // Set recievers to INPUT.
+        // Hold every plate at ground until it's being measured.
         for (uint8_t i = 0; i < NUM_KEYS; i++) {
-            *KEY_PINS[i].ddr &= ~KEY_PINS[i].bit;
+            *KEY_PINS[i].port &= ~KEY_PINS[i].bit;
+            *KEY_PINS[i].ddr |= KEY_PINS[i].bit;
         }
 
         #if defined(LED_WARNING)

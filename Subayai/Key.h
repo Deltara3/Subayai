@@ -39,9 +39,7 @@
 
 
         uint16_t readCapacitive() {
-            // Attempt to discharge the plate.
-            *pin.ddr |= pin.bit;
-            *pin.port &= ~pin.bit;
+            // Give the plate a moment to discharge completely.
             delayMicroseconds(config->dischargeDelays[index]);
             *pin.ddr &= ~pin.bit;
 
@@ -59,6 +57,9 @@
 
             // Stop charging.
             *SENDER.port &= ~SENDER.bit;
+
+            // Prevent this plate from feeding other plates.
+            *pin.ddr |= pin.bit;
 
             return cycles;
         }
