@@ -36,6 +36,7 @@ To provide a quick rundown of the commands:
 - `dump` - Prints your current config.
 - `update` - Updates specific values or your entire config.
 - `reset` - Resets your entire config, use with caution.
+- `sense` - Shows a live feed of the raw reading, useful for calibration.
 
 > [!IMPORTANT]
 > `--key-code`, `--threshold`, and `--discharge-delay` expect a value in the form of `k=v` where `k` is the key number, and `v` is the value.
