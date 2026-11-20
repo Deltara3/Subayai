@@ -37,14 +37,6 @@
             config = &cfg;
         }
 
-        private:
-        Pin pin;
-        uint8_t index = 0;
-        const Config* config = nullptr;
-
-        bool lastRaw = false;
-        bool state = false;
-        uint32_t lastChange = 0;
 
         uint16_t readCapacitive() {
             // Attempt to discharge the plate.
@@ -70,5 +62,14 @@
 
             return cycles;
         }
+
+        private:
+        Pin pin;
+        uint8_t index = 0;
+        const Config* config = nullptr;
+
+        bool lastRaw = false;
+        bool state = false;
+        uint32_t lastChange = 0;
     };
 #endif

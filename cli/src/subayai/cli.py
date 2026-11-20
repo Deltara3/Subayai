@@ -1,11 +1,12 @@
 import typer
 from dataclasses import dataclass
-from subayai.commands import dump, update, reset
+from subayai.commands import dump, update, reset, sense
 
 app = typer.Typer()
 app.add_typer(dump.app)
 app.add_typer(update.app)
 app.add_typer(reset.app)
+app.add_typer(sense.app)
 
 @dataclass
 class AppState:

@@ -66,6 +66,23 @@
                     Protocol::sendKeyCount(Serial, NUM_KEYS);
                     break;
                 }
+                case CMD_SENSE_START: {
+                    Protocol::enterSense(Serial1);
+                    Protocol::sendAck(Serial);
+
+                    NKROKeyboard.releaseAll();
+                    memset(lastKeys, false, sizeof(lastKeys));
+                    break;
+                }
+                case CMD_SENSE_STOP: {
+                    Protocol::leaveSense(Serial1);
+                    Protocol::sendAck(Serial);
+                    break;
+                }
+                case CMD_SENSE_REQUEST: {
+                    Protocol::requestSense(Serial1);
+                    break;
+                }
             }
         }
 
@@ -96,6 +113,15 @@
                     }
 
                     NKROKeyboard.send();
+                    break;
+                }
+                case CMD_SENSE_STATE: {
+                    uint16_t senseState[MAX_KEYS];
+                    
+                    if (Protocol::readSenseState(Serial1, senseState)) {
+                        Protocol::sendSenseState(Serial, senseState);
+                    }
+
                     break;
                 }
             }

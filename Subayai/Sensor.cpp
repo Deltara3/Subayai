@@ -12,6 +12,7 @@
     Config config;
     Key keys[NUM_KEYS] = { Key() };
     uint16_t lastSent = 0x0000;
+    bool senseMode = false;
 
     void boardSetup() {
         Serial.begin(BAUD_RATE);
@@ -66,30 +67,50 @@
         if (Serial.available() > 0) {
             uint8_t cmd = Serial.read();
 
-            // Yes, I don't need a switch but it's future proofing.
             switch (cmd) {
                 case CMD_CONFIG_UPDATE: {
                     Protocol::readConfig(Serial, config);
                     lastSent = 0x0000;
                     break;
                 }
+                case CMD_SENSE_START: {
+                    senseMode = true;
+                    lastSent = 0x0000;
+                    break;
+                }
+                case CMD_SENSE_STOP: {
+                    senseMode = false;
+                    break;
+                }
+                case CMD_SENSE_REQUEST: {
+                    uint16_t senseState[MAX_KEYS] = { 0 };
+                    
+                    for (uint8_t i = 0; i < NUM_KEYS; i++) {
+                        senseState[i] = keys[i].readCapacitive();
+                    }
+
+                    Protocol::sendSenseState(Serial, senseState);
+                    break;
+                }
             }
         }
 
-        uint16_t packedKeys = 0;
-        bool enabled = !(*ENABLE.pin & ENABLE.bit);
+        if (!senseMode) {
+            uint16_t packedKeys = 0;
+            bool enabled = !(*ENABLE.pin & ENABLE.bit);
 
-        // Poll each key.
-        if (enabled) {
-            for (uint8_t i = 0; i < NUM_KEYS; i++) {
-                packedKeys |= keys[i].poll() << i;
+            // Poll each key.
+            if (enabled) {
+                for (uint8_t i = 0; i < NUM_KEYS; i++) {
+                    packedKeys |= keys[i].poll() << i;
+                }
             }
-        }
 
-        // Send to Bridge if needed.
-        if (packedKeys != lastSent) {
-            Protocol::sendKeyState(Serial, packedKeys);
-            lastSent = packedKeys;
+            // Send to Bridge if needed.
+            if (packedKeys != lastSent) {
+                Protocol::sendKeyState(Serial, packedKeys);
+                lastSent = packedKeys;
+            }
         }
     }
 #endif

@@ -15,7 +15,11 @@ enum Command: uint8_t {
     CMD_CONFIG_REQUEST = 0x20,
     CMD_CONFIG_UPDATE = 0x21,
     CMD_CONFIG_RESET = 0x22,
-    CMD_KEY_STATE = 0x30
+    CMD_KEY_STATE = 0x30,
+    CMD_SENSE_START = 0x31,
+    CMD_SENSE_STOP = 0x32,
+    CMD_SENSE_REQUEST = 0x33,
+    CMD_SENSE_STATE = 0x34
 };
 
 class Protocol {
@@ -50,6 +54,22 @@ class Protocol {
             serial.write(CMD_KEY_COUNT);
             serial.write(count);
         }
+
+        static void enterSense(Stream& serial) {
+            serial.write(CMD_SENSE_START);
+        }
+
+        static void leaveSense(Stream& serial) {
+            serial.write(CMD_SENSE_STOP);
+        }
+
+        static void requestSense(Stream& serial) {
+            serial.write(CMD_SENSE_REQUEST);
+        }
+
+        static bool readSenseState(Stream& serial, uint16_t* state) {
+            return serial.readBytes((uint8_t*)state, sizeof(uint16_t) * MAX_KEYS) == sizeof(uint16_t) * MAX_KEYS;
+        }
     #endif
 
     #if defined(__AVR_ATmega328P__)
@@ -65,5 +85,10 @@ class Protocol {
 
     static bool readConfig(Stream& serial, Config& config) {
         return serial.readBytes((uint8_t*)&config, sizeof(Config)) == sizeof(Config);
+    }
+
+    static void sendSenseState(Stream& serial, const uint16_t* state) {
+        serial.write(CMD_SENSE_STATE);
+        serial.write((const uint8_t*)state, sizeof(uint16_t) * MAX_KEYS);
     }
 };

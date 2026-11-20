@@ -1,3 +1,4 @@
+import struct
 import functools
 from serial import Serial
 from enum import IntEnum
@@ -20,7 +21,11 @@ class Command(IntEnum):
     KEY_COUNT = 0x10,
     CONFIG_REQUEST = 0x20,
     CONFIG_UPDATE = 0x21,
-    CONFIG_RESET = 0x22
+    CONFIG_RESET = 0x22,
+    SENSE_START = 0x31,
+    SENSE_STOP = 0x32,
+    SENSE_REQUEST = 0x33,
+    SENSE_STATE = 0x34
 
 class Protocol:
     port: str
@@ -60,9 +65,9 @@ class Protocol:
             case Command.ACK:
                 return
             case Command.NAK:
-                raise RuntimeError(f"Device rejected config {context} - was it a bad connection?")
+                raise RuntimeError(f"Device rejected command {context} - was it a bad connection?")
             case _:
-                raise RuntimeError(f"Unexpected response byte during config {context}: {response!r}")
+                raise RuntimeError(f"Unexpected response byte during command {context}: {response!r}")
 
     @requires_connection
     def request_config(self) -> Config:
@@ -73,12 +78,28 @@ class Protocol:
     @requires_connection
     def update_config(self, config: Config) -> None:
         self._conn.write(bytes([Command.CONFIG_UPDATE]) + config.to_bytes())
-        self._expect_ack("update")
+        self._expect_ack("CONFIG_UPDATE")
 
     @requires_connection
     def reset_config(self) -> None:
         self._conn.write(bytes([Command.CONFIG_RESET]))
-        self._expect_ack("reset")
+        self._expect_ack("CONFIG_RESET")
+
+    @requires_connection
+    def enter_sense(self) -> None:
+        self._conn.write(bytes([Command.SENSE_START]))
+        self._expect_ack("SENSE_START")
+
+    @requires_connection
+    def leave_sense(self) -> None:
+        self._conn.write(bytes([Command.SENSE_STOP]))
+        self._expect_ack("SENSE_STOP")
+
+    @requires_connection
+    def request_sense(self) -> list[int]:
+        self._conn.write(bytes([Command.SENSE_REQUEST]))
+        payload = self._read_response(Command.SENSE_STATE, 2 * Config.MAX_KEYS)
+        return list(struct.unpack(f"<{Config.MAX_KEYS}H", payload))
 
     def close(self) -> None:
         if self._conn:
